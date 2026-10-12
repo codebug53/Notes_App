@@ -1,5 +1,5 @@
 import React from 'react';
-import { GraduationCap, Code2, Calculator, Zap, FlaskConical, Cpu } from 'lucide-react';
+import { GraduationCap, Code2, Calculator, Zap } from 'lucide-react';
 
 export function CenterHeader({
   folders = [],
@@ -28,7 +28,7 @@ export function CenterHeader({
           fontWeight: 800
         }}>
           <GraduationCap size={15} />
-          <span>StudySphere • Student Context Study Workspace</span>
+          <span>StudySphere • Plaintext Flashcard Workspace</span>
         </div>
       </div>
 
@@ -38,7 +38,7 @@ export function CenterHeader({
           Mahammad Azhar's Study Workspace
         </h1>
         <p style={{ fontSize: '0.875rem', color: '#64748b', maxWidth: '640px', marginTop: '2px', lineHeight: 1.5 }}>
-          Structured Cornell note taking, interactive algorithm code execution, active recall flashcards, and homework deadline management.
+          Minimal Markdown flashcard note editing, algorithm code snippet execution, formula matrix revision, and homework management.
         </p>
       </div>
 

@@ -1,57 +1,58 @@
 import React from 'react';
-import { Search, Plus, Sparkles, Flame, BookOpen, Zap, CheckSquare, Calculator, Clock } from 'lucide-react';
+import { Search, Plus, Flame, FileText, CheckSquare, Calculator, Clock, Code2 } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 export function CurrentModuleCard({
   folderName = "CS & Algorithms",
   noteIndex = 1,
   totalNotes = 8,
   streakDays = 14,
-  activeTab = "Read Note",
+  activeTab = "Flashcards",
   setActiveTab,
   searchQuery,
   setSearchQuery,
   onOpenNewNote
 }) {
   const tabs = [
-    { id: "Read Note", label: "📖 Cornell Reader" },
-    { id: "AI Assistant", label: "⚡ AI Helper" },
-    { id: "Flashcards", label: "🎴 Flashcards" },
-    { id: "Tasks & Homework", label: "📝 Homework" },
-    { id: "Formula Sheet", label: "📐 Formulas" },
-    { id: "Focus Timer", label: "⏱️ Focus Timer" }
+    { id: "Flashcards", label: "Code & Notes", icon: Code2 },
+    { id: "Tasks & Homework", label: "To-Dos & Tasks", icon: CheckSquare },
+    { id: "Formula Sheet", label: "Formulas", icon: Calculator },
+    { id: "Focus Timer", label: "Focus Timer", icon: Clock }
   ];
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-      {/* Dark Subject Banner */}
+      {/* Subject Header Banner */}
       <div className="current-module-banner">
         <div>
-          <div style={{ fontSize: '0.725rem', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 600 }}>
+          <div style={{ fontSize: '0.725rem', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 700 }}>
             Active Subject Folder
           </div>
-          <div style={{ fontSize: '1.2rem', fontWeight: 800, color: '#ffffff', marginTop: '2px' }}>
+          <div style={{ fontSize: '1.2rem', fontWeight: 800, color: '#0f172a', marginTop: '2px' }}>
             {folderName}
           </div>
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
           <div style={{ textAlign: 'right' }}>
-            <div style={{ fontSize: '0.725rem', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 600 }}>
-              Viewing Note
+            <div style={{ fontSize: '0.725rem', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 700 }}>
+              Viewing Deck
             </div>
-            <div style={{ fontSize: '1.2rem', fontWeight: 800, color: '#ffffff', marginTop: '2px' }}>
+            <div style={{ fontSize: '1.2rem', fontWeight: 800, color: '#6366f1', marginTop: '2px' }}>
               {noteIndex} of {totalNotes}
             </div>
           </div>
 
-          <button
+          <motion.button
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.97 }}
             onClick={onOpenNewNote}
             style={{
               background: 'linear-gradient(135deg, #6366f1, #06b6d4)',
               color: '#ffffff',
               border: 'none',
               borderRadius: '10px',
-              padding: '9px 14px',
+              padding: '9px 16px',
               fontWeight: 700,
               fontSize: '0.825rem',
               cursor: 'pointer',
@@ -62,8 +63,8 @@ export function CurrentModuleCard({
             }}
           >
             <Plus size={16} />
-            <span>Add Note</span>
-          </button>
+            <span>Add Flashcard</span>
+          </motion.button>
         </div>
       </div>
 
@@ -71,25 +72,23 @@ export function CurrentModuleCard({
       <div className="streak-card">
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           <div style={{
-            width: '26px',
-            height: '26px',
+            width: '28px',
+            height: '28px',
             borderRadius: '50%',
-            background: '#f59e0b',
-            color: '#ffffff',
+            background: '#fef3c7',
+            color: '#d97706',
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'center',
-            fontWeight: 800,
-            fontSize: '0.8rem'
+            justifyContent: 'center'
           }}>
-            🔥
+            <Flame size={16} />
           </div>
           <span style={{ fontSize: '0.825rem', color: '#475569', fontWeight: 600 }}>
-            {streakDays} Days Study Streak • Active recall practice & formula revision active
+            {streakDays} Days Study Streak • Plaintext Markdown editing & code note practice active
           </span>
         </div>
 
-        <span style={{ fontSize: '0.825rem', fontWeight: 800, color: '#10b981' }}>
+        <span style={{ fontSize: '0.825rem', fontWeight: 800, color: '#10b981', background: '#dcfce7', padding: '3px 10px', borderRadius: '99px' }}>
           +{streakDays} Days
         </span>
       </div>
@@ -97,15 +96,23 @@ export function CurrentModuleCard({
       {/* Navigation Tabs & Search Bar */}
       <div className="nav-tabs-bar">
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px', overflowX: 'auto', paddingBottom: '2px' }}>
-          {tabs.map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={activeTab === tab.id ? 'tab-pill-active' : 'tab-pill-inactive'}
-            >
-              {tab.label}
-            </button>
-          ))}
+          {tabs.map((tab) => {
+            const Icon = tab.icon;
+            const isActive = activeTab === tab.id;
+            return (
+              <motion.button
+                key={tab.id}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => setActiveTab(tab.id)}
+                className={isActive ? 'tab-pill-active' : 'tab-pill-inactive'}
+                style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+              >
+                <Icon size={14} color={isActive ? '#ffffff' : '#64748b'} />
+                <span>{tab.label}</span>
+              </motion.button>
+            );
+          })}
         </div>
 
         {/* Search Field */}
@@ -113,7 +120,7 @@ export function CurrentModuleCard({
           <Search size={15} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
           <input
             type="text"
-            placeholder="Search notes & terms..."
+            placeholder="Search flashcards..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             style={{

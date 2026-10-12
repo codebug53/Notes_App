@@ -1,31 +1,24 @@
-import React, { useState } from 'react';
-import { TrendingUp, RotateCcw, CheckCircle, Clock, Calendar, Flame, GraduationCap, Award } from 'lucide-react';
+import React from 'react';
+import { 
+  TrendingUp, RotateCcw, CheckCircle, Clock, Calendar, 
+  Flame, GraduationCap, Award, CheckSquare, Plus, ArrowRight 
+} from 'lucide-react';
 import confetti from 'canvas-confetti';
 
 export function RightPanel({
   notesCount = 8,
   pyqsSolved = 42,
   revisionAccuracy = 94,
-  onContinueRevision
+  onContinueRevision,
+  dailyTodos = [],
+  onToggleDailyTodo,
+  onOpenTasks
 }) {
-  const [syllabusChecklist, setSyllabusChecklist] = useState([
-    { id: 1, title: 'Graph Shortest Paths (Dijkstra/Bellman)', tag: 'Algorithms', status: 'completed' },
-    { id: 2, title: 'Eigenvalues & Characteristic Equation', tag: 'Linear Algebra', status: 'completed' },
-    { id: 3, title: 'Maxwell Equations & Electromagnetic Waves', tag: 'Physics III', status: 'current' },
-    { id: 4, title: 'SN1 vs SN2 Nucleophilic Substitution', tag: 'Chemistry', status: 'current' },
-  ]);
-
-  const handleToggleSyllabus = (id) => {
-    const updated = syllabusChecklist.map(item => {
-      if (item.id === id) {
-        const nextStatus = item.status === 'completed' ? 'current' : 'completed';
-        if (nextStatus === 'completed') confetti({ particleCount: 30, spread: 40 });
-        return { ...item, status: nextStatus };
-      }
-      return item;
-    });
-    setSyllabusChecklist(updated);
-  };
+  const completedDailyCount = dailyTodos.filter(t => t.completed).length;
+  const totalDailyCount = dailyTodos.length;
+  const dailyProgressPercent = totalDailyCount > 0 
+    ? Math.round((completedDailyCount / totalDailyCount) * 100) 
+    : 0;
 
   const weeklyBars = [
     { day: 'Mon', val: 40 },
@@ -39,7 +32,7 @@ export function RightPanel({
 
   return (
     <aside className="right-panel">
-      {/* Top Card: Student Revision Progress */}
+      {/* 1. Top Card: Student Revision Progress */}
       <div className="progress-card-green">
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
           <div>
@@ -60,9 +53,9 @@ export function RightPanel({
           </div>
 
           <div style={{ background: 'rgba(255, 255, 255, 0.15)', padding: '10px 8px', borderRadius: '12px', textAlign: 'left' }}>
-            <div style={{ fontSize: '0.65rem', textTransform: 'uppercase', opacity: 0.8, fontWeight: 700 }}>Exams</div>
-            <div style={{ fontSize: '1.2rem', fontWeight: 800 }}>{pyqsSolved}</div>
-            <div style={{ fontSize: '0.65rem', opacity: 0.8 }}>solved</div>
+            <div style={{ fontSize: '0.65rem', textTransform: 'uppercase', opacity: 0.8, fontWeight: 700 }}>To-Dos</div>
+            <div style={{ fontSize: '1.2rem', fontWeight: 800 }}>{completedDailyCount}/{totalDailyCount}</div>
+            <div style={{ fontSize: '0.65rem', opacity: 0.8 }}>today</div>
           </div>
 
           <div style={{ background: 'rgba(255, 255, 255, 0.15)', padding: '10px 8px', borderRadius: '12px', textAlign: 'left' }}>
@@ -93,58 +86,74 @@ export function RightPanel({
         </div>
       </div>
 
-      {/* Middle Card: High Yield Syllabus Goals */}
+      {/* 2. Middle Card: Live Daily Tasks Quick Check */}
       <div className="learning-path-cyan">
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
           <div>
-            <h2 style={{ fontSize: '1.1rem', fontWeight: 800, color: '#ffffff' }}>High Yield Goals</h2>
-            <p style={{ fontSize: '0.75rem', opacity: 0.9 }}>Core Exam Topics</p>
+            <h2 style={{ fontSize: '1.1rem', fontWeight: 800, color: '#ffffff' }}>Daily Checklist</h2>
+            <p style={{ fontSize: '0.75rem', opacity: 0.9 }}>Today's Priority To-Dos</p>
           </div>
           <div style={{ background: 'rgba(255, 255, 255, 0.2)', padding: '6px', borderRadius: '10px' }}>
-            <Award size={18} color="#ffffff" />
+            <CheckSquare size={18} color="#ffffff" />
           </div>
         </div>
 
         {/* Inner Module Status Card */}
         <div style={{ background: 'rgba(255, 255, 255, 0.18)', borderRadius: '14px', padding: '12px 14px', marginBottom: '14px' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
-            <span style={{ fontSize: '0.78rem', fontWeight: 700 }}>Semester Exam Checklist</span>
-            <span style={{ background: '#0369a1', padding: '2px 8px', borderRadius: '99px', fontSize: '0.68rem', fontWeight: 800 }}>85% done</span>
+            <span style={{ fontSize: '0.78rem', fontWeight: 700 }}>Today's Progress</span>
+            <span style={{ background: '#0369a1', padding: '2px 8px', borderRadius: '99px', fontSize: '0.68rem', fontWeight: 800 }}>
+              {dailyProgressPercent}% done
+            </span>
           </div>
 
-          {/* Checklist */}
+          {/* Live Daily Tasks List */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-            {syllabusChecklist.map((item) => (
+            {dailyTodos.slice(0, 4).map((item) => (
               <div
                 key={item.id}
-                onClick={() => handleToggleSyllabus(item.id)}
+                onClick={() => onToggleDailyTodo && onToggleDailyTodo(item.id)}
                 style={{
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'space-between',
                   fontSize: '0.75rem',
-                  cursor: 'pointer'
+                  cursor: 'pointer',
+                  gap: '8px'
                 }}
               >
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  {item.status === 'completed' ? (
-                    <CheckCircle size={14} color="#ffffff" fill="#0284c7" />
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flex: 1, minWidth: 0 }}>
+                  {item.completed ? (
+                    <CheckCircle size={15} color="#ffffff" fill="#0284c7" style={{ flexShrink: 0 }} />
                   ) : (
-                    <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#ffffff' }} />
+                    <span style={{ width: '9px', height: '9px', borderRadius: '50%', background: '#ffffff', flexShrink: 0 }} />
                   )}
-                  <span style={{ fontWeight: item.status === 'completed' ? 700 : 500, textDecoration: item.status === 'completed' ? 'line-through' : 'none' }}>
+                  <span style={{
+                    fontWeight: item.completed ? 700 : 500,
+                    textDecoration: item.completed ? 'line-through' : 'none',
+                    opacity: item.completed ? 0.75 : 1,
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap'
+                  }}>
                     {item.title}
                   </span>
                 </div>
-                <span style={{ fontSize: '0.65rem', opacity: 0.8 }}>{item.tag}</span>
+                <span style={{ fontSize: '0.65rem', opacity: 0.85, flexShrink: 0 }}>{item.timeEstimate || '30m'}</span>
               </div>
             ))}
+
+            {dailyTodos.length === 0 && (
+              <div style={{ fontSize: '0.75rem', opacity: 0.8, textAlign: 'center', padding: '8px 0' }}>
+                All tasks done for today!
+              </div>
+            )}
           </div>
         </div>
 
-        {/* Action Button */}
+        {/* Action Button to Open Tasks Manager */}
         <button
-          onClick={onContinueRevision}
+          onClick={onOpenTasks}
           style={{
             width: '100%',
             background: '#0b0f17',
@@ -162,25 +171,25 @@ export function RightPanel({
           }}
           className="btn-action"
         >
-          <RotateCcw size={14} />
-          <span>Resume Cornell Study Mode</span>
+          <span>Open Tasks & Goals Hub</span>
+          <ArrowRight size={14} />
         </button>
       </div>
 
-      {/* Bottom Card: Daily Focus Quote */}
+      {/* 3. Bottom Card: Focus Guidance */}
       <div className="quote-card-grey">
         <p style={{ fontSize: '0.825rem', fontStyle: 'italic', color: '#475569', lineHeight: 1.5, marginBottom: '14px' }}>
-          "Consistent Cornell note-taking and active recall transform complex STEM subjects into clear, top-scoring knowledge."
+          "Consistent code review and structured milestone checklists turn complex engineering systems into second nature."
         </p>
 
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '1px solid #cbd5e1', paddingTop: '10px' }}>
           <div>
-            <div style={{ fontSize: '0.78rem', fontWeight: 700, color: '#0f172a' }}>Daily Study Target</div>
-            <div style={{ fontSize: '0.7rem', color: '#64748b' }}>Revise 2 Notes + 5 Flashcards</div>
+            <div style={{ fontSize: '0.78rem', fontWeight: 700, color: '#0f172a' }}>Daily Routine</div>
+            <div style={{ fontSize: '0.7rem', color: '#64748b' }}>Check off tasks + Review 1 snippet</div>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.7rem', color: '#64748b', fontWeight: 600 }}>
             <Clock size={14} />
-            <span>25 min/session</span>
+            <span>Active Goal</span>
           </div>
         </div>
       </div>
